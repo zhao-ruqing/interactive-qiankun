@@ -1,6 +1,6 @@
 // 布局
 import { Outlet } from "react-router-dom";
-import styled from "styled-components"; // 引入 styled-components
+import styled from "styled-components";
 import { isQiankunMicroFrontend } from "../utils/qiankun";
 import BreadcrumbNav from "./components/Breadcrumb";
 import Header from "./components/Header";
@@ -18,8 +18,10 @@ const AdminLayoutWrapper = styled.div`
 const LayoutBody = styled.div`
   display: flex;
   flex: 1;
+  flex-direction: column;
   overflow: hidden;
   box-sizing: border-box;
+  min-height: 0;
 `;
 
 const MainContent = styled.main`
@@ -28,51 +30,50 @@ const MainContent = styled.main`
   flex-direction: column;
   overflow: hidden;
   background-color: #f0f2f5;
+  min-height: 0;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 15px;
+  padding: 16px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  min-height: 0;
 `;
 
 const ContentHeader = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 `;
 
 const Content = styled.div`
   flex: 1;
   overflow-y: auto;
   background-color: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  padding: 15px;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 20px;
+  min-height: 0;
 
-  &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  }
-
-  /* 自定义滚动条样式 */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
+    background: #d9d9d9;
+    border-radius: 3px;
 
     &:hover {
-      background: #a8a8a8;
+      background: #b3b3b3;
     }
   }
 `;

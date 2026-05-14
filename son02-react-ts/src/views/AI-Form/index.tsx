@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 import InputArea from "./components/input-area";
+import PromptEngine from "./components/prompt-engine";
 
 // 添加一个外层容器样式，确保占据完整高度
 const AIFormContainer = styled.div`
@@ -37,7 +38,9 @@ const AIForm = () => {
           <InputArea />
         </div>
 
-        <div className="right">Right</div>
+        <div className="right">
+          <PromptEngine />
+        </div>
       </AIFormWrapper>
     </AIFormContainer>
   );

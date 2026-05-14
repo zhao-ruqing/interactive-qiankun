@@ -1,8 +1,8 @@
 import { getBaseURL } from "@/utils/request";
-import { OpenAIOutlined, RollbackOutlined } from "@ant-design/icons";
-import { Button, message, Space } from "antd";
-import TextArea, { type TextAreaRef } from "antd/es/input/TextArea";
-import { useEffect, useRef, useState } from "react";
+import { OpenAIOutlined } from "@ant-design/icons";
+import { Button, message } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useRef, useState } from "react";
 import { styled } from "styled-components";
 
 const InputAreaWrapper = styled.div`
@@ -15,9 +15,14 @@ const InputAreaWrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
   height: 100%;
+
   .ant-input {
     height: 100%;
+    color: #000 !important; // 强制黑色字体
+    background: #fff !important;
+    caret-color: #000;
   }
+
   .oper-btn {
     position: absolute;
     right: 20px;
@@ -25,175 +30,144 @@ const InputAreaWrapper = styled.div`
     z-index: 999;
   }
 `;
-// ai表单的文本输入区域组件
+
 const InputArea = () => {
   const [promptValue, setPromptValue] = useState("");
-  const [originalPrompt, setOriginalPrompt] = useState<string | null>(null); // 新增：保存原始文本
   const [isLoading, setIsLoading] = useState(false);
-  const textAreaRef = useRef<TextAreaRef>(null);
 
-  // 清理SSE连接的函数
-  const closeSSE = () => {
-    setIsLoading(false);
-  };
+  // 中断请求
+  const controllerRef = useRef<AbortController | null>(null);
 
-  // 组件卸载时清理SSE连接
-  useEffect(() => {
-    return () => {
-      closeSSE();
-    };
-  }, []);
-
-  // 恢复原有文本
-  const handleRestore = () => {
-    if (originalPrompt !== null) {
-      setPromptValue(originalPrompt);
-      setOriginalPrompt(null); // 恢复后清空备份，避免重复恢复
-      setIsLoading(false); // 确保加载状态关闭
-    }
-  };
-
-  // sse
+  // AI美化
   const handleAiSSE = async () => {
-    if (!promptValue) {
+    if (!promptValue.trim()) {
       return message.warning("请输入文本");
     }
 
-    // 获取选中范围
-    const textArea = textAreaRef.current?.resizableTextArea?.textArea;
-    if (!textArea) return;
+    // 保存用户原始输入
+    const userInput = promptValue;
 
-    const start = textArea.selectionStart ?? 0;
-    const end = textArea.selectionEnd ?? 0;
-
-    // 如果有选中，则只处理选中的部分，否则处理全部
-    const isSelection = start !== end;
-    const textToProcess = isSelection
-      ? promptValue.substring(start, end)
-      : promptValue;
-
-    // 记录前缀和后缀，以便精准覆盖
-    const prefix = isSelection ? promptValue.substring(0, start) : "";
-    const suffix = isSelection ? promptValue.substring(end) : "";
-
-    // 如果已有连接，先关闭
-    closeSSE();
-
-    // 新增：在开始新的生成前，保存当前文本作为原始文本（如果还没有备份的话）
-    if (originalPrompt === null) {
-      setOriginalPrompt(promptValue);
-    }
+    // 清空文本框，准备流式输出
+    setPromptValue("");
 
     setIsLoading(true);
 
-    let accumulatedContent = ""; // 用于累加流式内容
+    const controller = new AbortController();
+    controllerRef.current = controller;
 
     try {
-      // 使用 fetch 替代 EventSource 以支持 POST 请求和更好的错误处理
       const response = await fetch(`${getBaseURL()}/ai/aiForm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: textToProcess }),
+        body: JSON.stringify({
+          prompt: userInput,
+          userId: JSON.parse(localStorage.getItem("user") || "{}").state
+            .userInfo.userId,
+        }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP错误: ${response.status}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error("ReadableStream not supported");
+      if (!response.body) {
+        throw new Error("响应流为空");
       }
+
+      const reader = response.body.getReader();
 
       const decoder = new TextDecoder();
+
       let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
+
         if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
+        buffer += decoder.decode(value, {
+          stream: true,
+        });
 
-        // 处理可能的多行 SSE 格式数据 (data: {...}\n\n)
         const lines = buffer.split("\n");
-        buffer = lines.pop() || ""; // 保留最后一个不完整的行
+
+        buffer = lines.pop() || "";
 
         for (const line of lines) {
-          const trimmedLine = line.trim();
-          if (trimmedLine.startsWith("data: ")) {
-            const jsonStr = trimmedLine.substring(6);
-            if (jsonStr === "[DONE]") {
-              closeSSE();
-              // 生成完成，可以选择保留或清除 originalPrompt，这里选择保留以便用户手动恢复
+          if (!line.startsWith("data: ")) continue;
+
+          const dataStr = line.slice(6);
+
+          // 流结束
+          if (dataStr === "[DONE]") {
+            setIsLoading(false);
+            return;
+          }
+
+          try {
+            const data = JSON.parse(dataStr);
+
+            if (data.done) {
+              setIsLoading(false);
               return;
             }
-            try {
-              const data = JSON.parse(jsonStr);
-              if (data.done) {
-                closeSSE();
-                return;
-              }
 
-              // 累加新内容
-              if (data.content) {
-                accumulatedContent += data.content;
-                // 精准覆盖原有选中的位置
-                setPromptValue(prefix + accumulatedContent + suffix);
-              }
-            } catch (e) {
-              message.error(e || "AI生成失败");
-              console.warn("Failed to parse SSE data:", jsonStr);
-            }
+            // 覆盖式流输出
+            setPromptValue((prev) => prev + (data.content || ""));
+          } catch (err) {
+            console.error("SSE解析失败:", err);
           }
         }
       }
+    } catch (error: any) {
+      console.error(error);
 
-      // 确保最后的状态清理
-      closeSSE();
-    } catch (error) {
-      console.error("SSE Error:", error);
-      message.error(error instanceof Error ? error.message : "AI生成失败");
-      closeSSE();
+      if (error.name === "AbortError") {
+        message.info("已停止生成");
+      } else {
+        message.error(
+          error?.message || "请求超时，可点击继续，或切换模型后重试",
+        );
+      }
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  // 停止生成
+  const handleStop = () => {
+    controllerRef.current?.abort();
+    setIsLoading(false);
   };
 
   return (
     <InputAreaWrapper>
       <div className="oper-btn">
-        <Space>
-          {/* 新增：恢复按钮 */}
-          {originalPrompt !== null && (
-            <Button
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={handleRestore}
-              icon={<RollbackOutlined />}
-              disabled={isLoading} // 加载中禁止恢复，或者允许恢复即视为取消加载
-            >
-              恢复
-            </Button>
-          )}
-          <Button
-            onMouseDown={(e) => e.preventDefault()} // 防止点击按钮导致 textarea 失焦
-            onClick={handleAiSSE}
-            loading={isLoading}
-            disabled={isLoading}
-          >
+        {isLoading ? (
+          <Button onClick={handleStop}>停止生成</Button>
+        ) : (
+          <Button onClick={handleAiSSE}>
             <OpenAIOutlined />
-            {isLoading ? "生成中..." : "AI美化"}
+            AI美化
           </Button>
-        </Space>
+        )}
       </div>
+
       <TextArea
-        style={{ resize: "none" }}
-        ref={textAreaRef}
-        rows={4}
-        placeholder="随便说点什么..."
+        rows={10}
+        placeholder="请输入文本"
         value={promptValue}
         onChange={(e) => setPromptValue(e.target.value)}
+        style={{
+          color: "#000",
+          background: "#fff",
+        }}
       />
     </InputAreaWrapper>
   );
 };
+
 export default InputArea;

@@ -1,6 +1,8 @@
+import AIDocument from "@/views/AI-Document";
 import AIForm from "@/views/AI-Form";
 import AIReport from "@/views/AI-Report";
 import Home from "@/views/Home";
+import ImageRecognition from "@/views/Image-Recognition";
 import type { ReactNode } from "react";
 
 /**
@@ -34,6 +36,16 @@ export const routes: RouteConfig[] = [
     path: "/ai-report",
     name: "AI报表",
     element: <AIReport />,
+  },
+  {
+    path: "/ai-document",
+    name: "AI文档",
+    element: <AIDocument />,
+  },
+  {
+    path: "/image-recognition",
+    name: "图像识别",
+    element: <ImageRecognition />,
   },
 ];
 

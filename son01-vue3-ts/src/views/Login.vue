@@ -146,7 +146,10 @@ const handleRegister = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f5f7fa; // 改为浅灰色背景，现代感更强
+  background:
+    radial-gradient(ellipse at 30% 60%, rgba(64, 158, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(100, 120, 255, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, #f0f2f5 0%, #e8ecf1 100%);
   padding: 20px;
   box-sizing: border-box;
 }
@@ -154,35 +157,81 @@ const handleRegister = async () => {
 .login-box {
   width: 100%;
   max-width: 420px;
-  padding: 40px 30px;
+  padding: 48px 36px;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.02),
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      0 20px 48px rgba(0, 0, 0, 0.04);
+  }
 }
 
 .login-title {
   text-align: center;
-  margin: 0 0 40px 0;
+  margin: 0 0 40px;
   font-size: 26px;
-  color: #303133;
+  color: #1a1a2e;
   font-weight: 700;
   letter-spacing: 1px;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 3px;
+    background: linear-gradient(90deg, #409eff, #66b1ff);
+    margin: 14px auto 0;
+    border-radius: 3px;
+  }
 }
 
 .login-form {
   :deep(.el-input__wrapper) {
-    padding: 8px 15px; // 增大输入框触控面积
+    padding: 10px 14px;
+    border-radius: 10px;
+    box-shadow: none;
+    background: #f8f9fb;
+    border: 1px solid #ebeef5;
+    transition: all 0.25s ease;
+
+    &:hover {
+      border-color: #c0c4cc;
+      background: #f5f6f9;
+    }
+  }
+
+  :deep(.el-input__wrapper.is-focus) {
+    border-color: #409eff;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.08);
+  }
+
+  :deep(.el-input__inner) {
+    font-size: 15px;
+    color: #303133;
+  }
+
+  .el-form-item {
+    margin-bottom: 24px;
   }
 
   .button-group {
-    margin-top: 30px;
+    margin-top: 32px;
     display: flex;
     flex-direction: column;
-    gap: 15px; // 按钮之间的间距
+    gap: 14px;
 
     :deep(.el-form-item__content) {
-      margin-left: 0 !important; // 强制居中
+      margin-left: 0 !important;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -191,37 +240,43 @@ const handleRegister = async () => {
 
   .login-button {
     width: 100%;
-    height: 50px; // 适配大拇指操作的高度
+    height: 50px;
     font-size: 16px;
-    border-radius: 8px;
-    margin-left: 0 !important; // 覆盖 Element 默认的左边距
+    border-radius: 10px;
+    margin-left: 0 !important;
+    font-weight: 600;
+    transition: all 0.25s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 }
 
-/* 移动端适配 */
 @media (max-width: 576px) {
   .login-container {
-    background-color: #ffffff; // 手机端背景设为纯白
-    align-items: flex-start; // 靠顶布局，预留键盘位置
+    background: #ffffff;
+    align-items: flex-start;
     padding-top: 60px;
   }
 
   .login-box {
-    box-shadow: none; // 去掉阴影，模拟原生 App 感
-    padding: 0 20px;
-    border-radius: 0;
+    box-shadow: none;
+    padding: 0 24px;
+    border: none;
   }
 
   .login-title {
     font-size: 24px;
-    margin-bottom: 30px;
-    text-align: left; // 手机端左对齐标题更符合习惯
+    margin-bottom: 32px;
   }
 
-  .login-form {
-    .el-form-item {
-      margin-bottom: 20px;
-    }
+  .login-button {
+    height: 48px;
   }
 }
 </style>

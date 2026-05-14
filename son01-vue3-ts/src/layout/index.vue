@@ -186,17 +186,18 @@ const mobileNavList = [
   width: 100%;
   overflow: hidden;
   min-height: 0;
-  display: flex; /* 确保子应用容器也是 flex 布局 */
+  display: flex;
 }
 
-/* 侧边栏 */
+/* ===== 侧边栏 ===== */
 .aside {
-  background-color: #304156;
-  transition: width 0.3s;
+  background: linear-gradient(180deg, #1d2b3c 0%, #253549 100%);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-x: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -204,33 +205,53 @@ const mobileNavList = [
   line-height: 60px;
   text-align: center;
   color: #fff;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 16px;
-  background-color: #2b2f3a;
+  background: rgba(0, 0, 0, 0.15);
   white-space: nowrap;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* ===== Header ===== */
 .header {
-  background-color: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ebeef5;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  height: 60px;
+  height: 56px;
+  flex-shrink: 0;
 }
 
 .collapse-icon {
   font-size: 20px;
   cursor: pointer;
+  color: #606266;
+  transition: color 0.2s;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.collapse-icon:hover {
+  color: #409eff;
+  background: rgba(64, 158, 255, 0.08);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .user-name {
-  margin-right: 15px;
   font-size: 14px;
-  color: #666;
+  color: #303133;
+  font-weight: 500;
 }
 
+/* ===== Main Content ===== */
 .main {
   background-color: #f0f2f5;
   padding: 20px;
@@ -239,28 +260,30 @@ const mobileNavList = [
   min-height: 0;
 }
 
-/* 移动端特定样式 */
 .is-mobile .main {
   padding: 10px;
-  padding-bottom: 70px; /* 为底部菜单留空 */
+  padding-bottom: 70px;
 }
 
 .mobile-header-title {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 17px;
+  color: #1a1a2e;
 }
 
+/* ===== Mobile Bottom Bar ===== */
 .mobile-bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 60px;
-  background-color: #fff;
-  border-top: 1px solid #ddd;
+  background-color: #ffffff;
+  border-top: 1px solid #ebeef5;
   display: flex;
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom); /* 适配苹果刘海屏底部 */
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .nav-item {
@@ -269,37 +292,52 @@ const mobileNavList = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #7a7a7a;
+  color: #909399;
   cursor: pointer;
+  transition: color 0.2s;
+  position: relative;
 }
 
 .nav-item .el-icon {
   font-size: 22px;
   margin-bottom: 2px;
+  transition: color 0.2s;
 }
 
 .nav-text {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .nav-item.active {
   color: #409eff;
 }
 
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: #409eff;
+  border-radius: 0 0 2px 2px;
+}
+
 .nav-item.logout {
   color: #f56c6c;
 }
 
-/* 动画 */
+/* ===== Transitions ===== */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
+/* ===== Layout Structure ===== */
 .content-wrapper {
   display: flex;
   flex-direction: column;

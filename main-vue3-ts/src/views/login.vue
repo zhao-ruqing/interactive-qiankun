@@ -140,125 +140,101 @@ const handleRegister = async () => {
 </script>
 
 <style lang="scss" scoped>
-// 全局样式重置与容器美化
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  // 柔和渐变背景，提升视觉质感
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(64, 158, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(64, 158, 255, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(100, 120, 255, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #f0f2f5 0%, #e8ecf1 100%);
   padding: 20px;
   box-sizing: border-box;
-  transition: all 0.3s ease;
 }
 
-// 登录卡片优化
 .login-box {
   width: 100%;
-  max-width: 440px;
-  padding: 50px 35px;
-  background: #ffffff;
-  border-radius: 20px;
-  // 更柔和的多层阴影
+  max-width: 420px;
+  padding: 48px 36px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.08),
-    0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // 悬浮动效：卡片轻微上浮
   &:hover {
-    transform: translateY(-6px);
     box-shadow:
-      0 16px 32px rgba(0, 0, 0, 0.12),
-      0 4px 12px rgba(0, 0, 0, 0.08);
+      0 2px 4px rgba(0, 0, 0, 0.02),
+      0 12px 32px rgba(0, 0, 0, 0.08),
+      0 20px 48px rgba(0, 0, 0, 0.04);
   }
 }
 
-// 标题美化
 .login-title {
   text-align: center;
-  margin: 0 0 45px 0;
-  font-size: 28px;
-  color: #2c3e50;
-  font-weight: 600;
-  letter-spacing: 2px;
-  position: relative;
+  margin: 0 0 40px;
+  font-size: 26px;
+  color: #1a1a2e;
+  font-weight: 700;
+  letter-spacing: 1px;
 
-  // 标题底部装饰线
   &::after {
     content: "";
     display: block;
-    width: 50px;
+    width: 44px;
     height: 3px;
-    background: #409eff;
-    margin: 12px auto 0;
+    background: linear-gradient(90deg, #409eff, #66b1ff);
+    margin: 14px auto 0;
     border-radius: 3px;
   }
 }
 
-// 表单样式优化
 .login-form {
-  // 输入框样式美化
   :deep(.el-input__wrapper) {
-    padding: 10px 16px;
+    padding: 10px 14px;
     border-radius: 10px;
     box-shadow: none;
-    border: 1px solid #e5e6eb;
-    transition: all 0.3s ease;
+    background: #f8f9fb;
+    border: 1px solid #ebeef5;
+    transition: all 0.25s ease;
+
+    &:hover {
+      border-color: #c0c4cc;
+      background: #f5f6f9;
+    }
   }
 
-  // 输入框聚焦效果
   :deep(.el-input__wrapper.is-focus) {
     border-color: #409eff;
-    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.1);
-  }
-
-  // 表单间距统一
-  .el-form-item {
-    margin-bottom: 28px;
-  }
-
-  // 按钮组布局
-}
-
-// 移动端响应式优化
-@media (max-width: 576px) {
-  .login-container {
     background: #ffffff;
-    padding-top: 40px;
+    box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.08);
   }
 
-  .login-box {
-    box-shadow: none;
-    padding: 0 25px;
-    max-width: 100%;
+  :deep(.el-input__inner) {
+    font-size: 15px;
+    color: #303133;
   }
 
-  .login-title {
-    font-size: 24px;
-    margin-bottom: 35px;
-    text-align: center;
+  :deep(.el-input__prefix) {
+    color: #909399;
   }
 
-  .login-form {
-    .el-form-item {
-      margin-bottom: 24px;
-    }
-
-    .login-button,
-    .register-button {
-      height: 48px;
-    }
+  .el-form-item {
+    margin-bottom: 24px;
   }
 }
+
 .button-group {
-  margin-top: 35px;
+  margin-top: 32px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
+  gap: 14px;
 
   :deep(.el-form-item__content) {
     margin-left: 0 !important;
@@ -268,38 +244,74 @@ const handleRegister = async () => {
   }
 }
 
-// 登录按钮（主按钮）
 .login-button {
   width: 100%;
-  height: 52px;
+  height: 50px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #409eff 0%, #2b8dff 100%);
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #409eff 0%, #2b7de1 100%);
+  transition: all 0.25s ease;
+  letter-spacing: 2px;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(64, 158, 255, 0.35);
+    background: linear-gradient(135deg, #66b1ff 0%, #409eff 100%);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
-// 注册按钮（次按钮）
 .register-button {
   width: 100%;
-  height: 52px;
-  font-size: 16px;
+  height: 50px;
+  font-size: 15px;
   font-weight: 500;
   border-radius: 10px;
   color: #409eff;
-  border-color: #409eff;
-  transition: all 0.3s ease;
-  margin-left: 0px !important;
+  border: 1.5px solid #d9ecff;
+  transition: all 0.25s ease;
+  margin-left: 0 !important;
 
   &:hover {
-    background-color: rgba(64, 158, 255, 0.05);
-    transform: translateY(-2px);
+    background-color: rgba(64, 158, 255, 0.04);
+    border-color: #409eff;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    background: #ffffff;
+    align-items: flex-start;
+    padding-top: 60px;
+  }
+
+  .login-box {
+    box-shadow: none;
+    padding: 0 24px;
+    max-width: 100%;
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+  }
+
+  .login-title {
+    font-size: 24px;
+    margin-bottom: 32px;
+  }
+
+  .login-button,
+  .register-button {
+    height: 48px;
   }
 }
 </style>
